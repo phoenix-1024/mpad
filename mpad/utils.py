@@ -5,18 +5,22 @@ from math import ceil
 from scipy.sparse import csr_matrix, lil_matrix
 import torch
 from gensim.models.keyedvectors import KeyedVectors
-
+import pandas as pd
 
 def load_file(filename):
     labels = []
     docs =[]
+    if filename.split(.)[-1] != 'csv':
+        with open(filename, encoding='utf8', errors='ignore') as f:
+            for line in f:
+                content = line.split('\t')
+                labels.append(content[0])
+                docs.append(content[1][:-1])
+    else:
+        df = pd.read_csv(filename)
+        labels = df['target'].to_list()
+        docs = df['text'].to_list()
 
-    with open(filename, encoding='utf8', errors='ignore') as f:
-        for line in f:
-            content = line.split('\t')
-            labels.append(content[0])
-            docs.append(content[1][:-1])
-    
     return docs,labels  
 
   
