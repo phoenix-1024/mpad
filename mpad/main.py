@@ -10,9 +10,9 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torch.optim.lr_scheduler import StepLR
 
-from utils import load_file, preprocessing, get_vocab, load_embeddings, create_gows, accuracy, generate_batches, \
+from .utils import load_file, preprocessing, get_vocab, load_embeddings, create_gows, accuracy, generate_batches, \
     AverageMeter
-from models import MPAD
+from .models import MPAD
 
 
 # Training settings
