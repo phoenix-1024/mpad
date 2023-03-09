@@ -4,7 +4,6 @@ import numpy as np
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
 from math import ceil
-from .. import Config.Config as Config
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
@@ -19,7 +18,7 @@ from models import MPAD
 # Training settings
 
 
-def main(args: Config):
+def main(args):
     # parser = argparse.ArgumentParser()
     # parser.add_argument('--path-to-dataset', default='datasets/subjectivity.txt',
     #                     help='Path to the dataset.')
