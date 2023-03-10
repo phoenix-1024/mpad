@@ -132,7 +132,7 @@ def main(args):
             features_test = [x.cuda() for x in features_test]
             batch_n_graphs_test = [x.cuda() for x in batch_n_graphs_test]
             y_test = [x.cuda() for x in y_test]
-            args.weights = [x.cuda() for x in args.weights]
+            args.weights = args.weights.cuda()
 
         def train(epoch, adj, features, batch_n_graphs, y):
             optimizer.zero_grad()
