@@ -137,7 +137,7 @@ def main(args):
         def train(epoch, adj, features, batch_n_graphs, y):
             optimizer.zero_grad()
             output = model(features, adj, batch_n_graphs)
-            if not args.weights:
+            if args.weights is None:
                 loss_train = F.cross_entropy(output, y)
             else:
                 loss_train = F.cross_entropy(output, y, weight=args.weights)
@@ -147,7 +147,10 @@ def main(args):
 
         def test(adj, features, batch_n_graphs, y):
             output = model(features, adj, batch_n_graphs)
-            loss_test = F.cross_entropy(output, y)
+            if args.weights is None:
+                loss_test = F.cross_entropy(output, y)
+            else:
+                loss_test = F.cross_entropy(output, y, weight=args.weights)
             return output, loss_test
 
         best_acc = 0
