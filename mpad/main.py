@@ -64,7 +64,8 @@ def main(args):
     class_weights = class_weight.compute_class_weight('balanced',
                                                       classes=np.unique(class_labels),
                                                       y=class_labels)
-    class_weights = torch.tensor(class_weights)
+    print("class weights",class_weights)
+    class_weights = torch.tensor(class_weights,dtype=torch.float)
     # weights = class_weight.compute_sample_weight('balanced',
     #                                              y = class_labels)
     nclass = np.unique(class_labels).size
