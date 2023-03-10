@@ -3,7 +3,7 @@ import torch
 class Config:
     def __init__(self, *, path_to_dataset, path_to_embeddings, batch_size, window_size=2, message_passing_layers=2,
                  hidden=64, penultimate=64, dropout=0.5, lr=0.001, epochs=200, patience=20, directed=True,
-                 normalize=True, use_master_node=True):
+                 normalize=True, use_master_node=True, weights=None):
         self.no_cuda = False
         self.path_to_dataset = path_to_dataset
         self.path_to_embeddings = path_to_embeddings
@@ -20,3 +20,5 @@ class Config:
         self.epochs = epochs
         self.patience = patience
         self.cuda = not self.no_cuda and torch.cuda.is_available()
+
+        self.weights = weights

@@ -115,7 +115,7 @@ def main(args):
                      args.dropout, embeddings, args.use_master_node)
 
         parameters = filter(lambda p: p.requires_grad, model.parameters())
-        optimizer = optim.Adam(parameters, lr=args.lr)
+        optimizer = optim.AdamW(parameters, lr=args.lr)
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.5)
 
         if args.cuda:
@@ -132,11 +132,15 @@ def main(args):
             features_test = [x.cuda() for x in features_test]
             batch_n_graphs_test = [x.cuda() for x in batch_n_graphs_test]
             y_test = [x.cuda() for x in y_test]
+            args.weights = [x.cuda() for x in args.weights]
 
         def train(epoch, adj, features, batch_n_graphs, y):
             optimizer.zero_grad()
             output = model(features, adj, batch_n_graphs)
-            loss_train = F.cross_entropy(output, y)
+            if not args.weights:
+                loss_train = F.cross_entropy(output, y)
+            else:
+                loss_train = F.cross_entropy(output, y, weight=args.weights)
             loss_train.backward()
             optimizer.step()
             return output, loss_train
