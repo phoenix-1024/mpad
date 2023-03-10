@@ -64,7 +64,7 @@ def main(args):
     class_weights = class_weight.compute_class_weight('balanced',
                                                       classes=np.unique(class_labels),
                                                       y=class_labels)
-    print("class weights",class_weights)
+    print("class weights", class_weights)
     class_weights = torch.tensor(class_weights,dtype=torch.float)
     # weights = class_weight.compute_sample_weight('balanced',
     #                                              y = class_labels)
@@ -152,7 +152,7 @@ def main(args):
 
         def test(adj, features, batch_n_graphs, y):
             output = model(features, adj, batch_n_graphs)
-            loss_test = F.cross_entropy(output, y, weight=class_weights if args.weights else None)
+            loss_test = F.cross_entropy(output, y)
             return output, loss_test
 
         best_acc = 0
