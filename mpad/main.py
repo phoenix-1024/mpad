@@ -3,6 +3,7 @@ import argparse
 import numpy as np
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
+from sklearn.utils import class_weight
 from math import ceil
 import torch
 import torch.nn.functional as F
@@ -60,7 +61,12 @@ def main(args):
 
     enc = LabelEncoder()
     class_labels = enc.fit_transform(class_labels)
-
+    class_weights = class_weight.compute_class_weight('balanced',
+                                                      classes=np.unique(class_labels),
+                                                      y=class_labels)
+    class_weights = torch.tensor(class_weights)
+    # weights = class_weight.compute_sample_weight('balanced',
+    #                                              y = class_labels)
     nclass = np.unique(class_labels).size
     y = list()
     for i in range(len(class_labels)):
@@ -132,28 +138,25 @@ def main(args):
             features_test = [x.cuda() for x in features_test]
             batch_n_graphs_test = [x.cuda() for x in batch_n_graphs_test]
             y_test = [x.cuda() for x in y_test]
-            try:
-                args.weights = args.weights.cuda()
-            except:
-                pass
+            class_weights = class_weights.cuda()
+
 
         def train(epoch, adj, features, batch_n_graphs, y):
             optimizer.zero_grad()
             output = model(features, adj, batch_n_graphs)
-            loss_train = F.cross_entropy(output, y, weight=args.weights)
+            loss_train = F.cross_entropy(output, y, weight=class_weights if args.weights else None)
             loss_train.backward()
             optimizer.step()
             return output, loss_train
 
         def test(adj, features, batch_n_graphs, y):
             output = model(features, adj, batch_n_graphs)
-            loss_test = F.cross_entropy(output, y, weight=args.weights)
+            loss_test = F.cross_entropy(output, y, weight=class_weights if args.weights else None)
             return output, loss_test
 
         best_acc = 0
 
         for epoch in range(args.epochs):
-            scheduler.step()
 
             start = time.time()
             model.train()
@@ -165,6 +168,7 @@ def main(args):
                 output, loss = train(epoch, adj_train[i], features_train[i], batch_n_graphs_train[i], y_train[i])
                 train_loss.update(loss.item(), output.size(0))
                 train_acc.update(accuracy(output.data, y_train[i].data), output.size(0))
+            scheduler.step()
 
             # Evaluate on validation set
             model.eval()
